@@ -1,14 +1,11 @@
 
+function startApp() {
 // Initiating Google Maps
 var map = new google.maps.Map(document.getElementById('map-canvas'), {
     zoom: 13,
     center: new google.maps.LatLng(37.775260, -122.431194),
     disableDefaultUI: true
 });
-
-// if (typeof google != ('object')) {
-//     $('#map-canvas').append("<h1>Unable to load the map at this time. Please try again later.</h1>");
-// }
 
 var infoWindow = new google.maps.InfoWindow({ content: "contentString" });
 
@@ -47,16 +44,18 @@ function mapMarker(name, type, lat, long, show, venueId) {
     self.updateShow = function(show){
         self.show(show);
         if(show){
-            self.marker.setMap( map );
+            // self.marker.setMap( map );
+            self.marker.setVisible(true);
         }else{
-            self.marker.setMap( null );
-        }
+            // self.marker.setMap( null );
+            self.marker.setVisible(false);
+            }
     };
 
 
     // Begin JSON request
     function getInfoWindowContent(){
-        var $infoWindowContent = $('#content');
+        // var $infoWindowContent = $('#content');
         // var $infoWindowContent = infoWindow.setContent();
         var fourSquareUrl = 'https://api.foursquare.com/v2/venues/'+ venueId+
         '?client_id=XKVOFWGXXGYN0A2VUP3EZS1AILPGFW3PUEG1LDQVKKSNWZGE'+
@@ -69,24 +68,16 @@ function mapMarker(name, type, lat, long, show, venueId) {
             var phone = venue.contact.formattedPhone;
             var website = venue.url;
 
-            if(venueName) {$infoWindowContent.append('<p>' + venueName + '</p>');
-           } else {
-            $infoWindowContent('<p> Unable to find location name</p>');
-            }
-            if(address) {$infoWindowContent.append('<p>' + address + '</p>');
-           } else {
-                $infoWindowContent.append('<p> address unlisted </p>');
-            }
-            if(phone) {$infoWindowContent.append('<p>' + phone + '</p>');
-           } else {
-                $infoWindowContent.append('<p> Phone number unlisted </p>');
-            }
-            if(website) {$infoWindowContent.append('<p><a href=' + website + '></a></p>');
-           } else {
-                $infoWindowContent.append('<p> Website unlisted </p>');
-            }
+            var contentString = "";
+
+            venueName ? venueName= (contentString += '<p>' + venueName + '</p>') : (contentString+='<p> Unable to find location name </p>');
+            address ? address= (contentString += '<p>' + address + '</p>') : (contentString+='<p> Address unlisted </p>');
+            phone ? phone= (contentString += '<p>' + phone + '</p>') : (contentString+='<p> Phone number unlisted </p>');
+            website ? website= (contentString += '<p>' + website + '</p>') : (contentString+='<p> Website unlisted </p>');
+
+            infoWindow.setContent(contentString);
         }).error(function(e) {
-            $infoWindowContent.text('Sorry!! There was an error loading data from Foursquare!');
+            infoWindow.setContent('Sorry!! There was an error loading data from Foursquare!');
         });
     }
 }
@@ -129,7 +120,7 @@ function mapViewModel() {
     }, mapViewModel);
 }
 
-function startApp() {
+
     ko.applyBindings(new mapViewModel());
 }
 
